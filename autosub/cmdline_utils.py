@@ -1297,6 +1297,10 @@ def audio_or_video_prcs(  # pylint: disable=too-many-branches, too-many-statemen
                 concurrency=args.speech_concurrency,
                 is_keep=False,
                 result_list=result_list)
+        elif args.speech_api == "deepspeech":
+            text_list = core.deepspeech_to_text(
+                audio_fragments=audio_fragments,
+                result_list=result_list)
         else:
             text_list = None
 

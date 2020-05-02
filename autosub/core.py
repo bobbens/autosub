@@ -22,6 +22,7 @@ import wcwidth
 from autosub import api_baidu
 from autosub import api_google
 from autosub import api_xfyun
+from autosub import api_deepspeech
 from autosub import sub_utils
 from autosub import constants
 from autosub import ffmpeg_utils
@@ -119,6 +120,30 @@ def bulk_audio_conversion(  # pylint: disable=too-many-arguments
         pool.join()
         return None
     return audio_fragments
+
+
+
+def deepspeech_to_text(  # pylint: disable=too-many-locals,too-many-arguments,too-many-branches,too-many-statements
+        audio_fragments,
+        result_list=None):
+    """
+    Give a list of short-term audio fragment files
+    and generate text_list from DeepSpeech api.
+    """
+    ds = api_deepspeech.DeepSpeech()
+    print(_("\nProcesing short-term fragments with DeepSpeech and getting result."))
+    widgets = [_("Speech-to-Text: "),
+               progressbar.Percentage(), ' ',
+               progressbar.Bar(), ' ',
+               progressbar.ETA()]
+    pbar = progressbar.ProgressBar(widgets=widgets, maxval=len(audio_fragments)).start()
+    text_list = []
+    for i,a in enumerate(audio_fragments):
+        text_list.append( ds(a) )
+        pbar.update(i)
+    pbar.finish()
+
+    return text_list
 
 
 def gsv2_to_text(  # pylint: disable=too-many-locals,too-many-arguments,too-many-branches,too-many-statements
